@@ -25,17 +25,33 @@ public class ExceptionAndErrorController {
      */
     @ExceptionHandler
     public ResponseEntity<Object> handleRegistrationErrors(IllegalArgumentException ex) {
+        String exMsg = ex.getMessage();
+
+        // --- Account registration errors ---
+
         // Return status code 409 (Conflict) if the username already exists in the database
-        if (ex.getMessage().contains("Username already exists")) {
-            return ResponseEntity.status(409).body(ex.getMessage()); 
+        if (exMsg.contains("Username already exists")) {
+            return ResponseEntity.status(409).body(exMsg); 
         }
         // Return status code 400 (Bad Request) if the username is blank or the password is too short
-        else if (ex.getMessage().contains("cannot be blank") || ex.getMessage().contains("at least 4 characters")) {
-            return ResponseEntity.status(400).body(ex.getMessage());
+        else if (exMsg.contains("cannot be blank") || exMsg.contains("at least 4 characters")) {
+            return ResponseEntity.status(400).body(exMsg);
         }
+
+        // --- Message related errors ---
+
+        // Return status code 400 (Bad Request) if the message's postedBy ID is not in the database
+        else if (exMsg.contains("The account does not exist")){
+            return ResponseEntity.status(400).body(exMsg);
+        }
+        // Return status code 400 (Bad Request) if the message's text is blank or too long
+        else if (exMsg.contains("Message cannot be blank or over 255 characters")){
+            return ResponseEntity.status(400).body(exMsg);
+        }
+
         else {
-            // Default to status code 400 (Bad Request) for any other registration related errors
-            return ResponseEntity.status(400).body("Invalid account details. Please try again");
+            // Default to status code 400 (Bad Request) for any other invalid inputs
+            return ResponseEntity.status(400).body("Invalid request. Please check your input.");
         }
     }
 
