@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.service.AccountService;
+import com.example.service.MessageService;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -19,10 +20,12 @@ import com.example.service.AccountService;
 public class SocialMediaController {
 
     private AccountService accountService;
+    private MessageService messageService;
 
     @Autowired
-    public SocialMediaController(AccountService accountService){
+    public SocialMediaController(AccountService accountService, MessageService messageService){
         this.accountService = accountService;
+        this.messageService = messageService;
     }
 
     
@@ -44,8 +47,25 @@ public class SocialMediaController {
     @PostMapping("/register")
     public ResponseEntity<Account> register(@RequestBody Account account) {
         Account createdAccount = accountService.register(account);
-        return ResponseEntity.status(200).body(createdAccount); // Successful registration
+        return ResponseEntity.status(200).body(createdAccount);
     }
    
+    /**
+     * Logs a user into their account.
+     * 
+     * Accepts an Account object in the request body and checks the username and password
+     * for a match in the database.  If valid, returns the matching Account.
+     * Otherwise, throws InvalidLoginException, which is handled globally.
+     * 
+     * @param account The Account object containing the username and password.
+     * @return a ResponseEntity containing the authenticated Account along with an HTTP Status 
+     *         code of 200 if successful.
+     * @throws InvalidLoginException if the credentials are invalid
+     */
+    @PostMapping("/login")
+    public ResponseEntity<Account> login(@RequestBody Account account) {
+        Account loggedIAccount = accountService.login(account.getUsername(), account.getPassword());
+        return ResponseEntity.status(200).body(loggedIAccount);
+    }
 
 }
