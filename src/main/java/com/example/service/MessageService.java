@@ -1,5 +1,7 @@
 package com.example.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,5 +46,16 @@ public class MessageService {
         }
 
         return messageRepository.save(newMessage);
+    }
+
+    /**
+     * Retrieves all messsages stored in the database
+     * 
+     * @return A list of all Message objects
+     */
+    public List<Message> getAllMessages() {
+        List<Message> allMessages = messageRepository.findAll();
+
+        return allMessages;
     }
 }

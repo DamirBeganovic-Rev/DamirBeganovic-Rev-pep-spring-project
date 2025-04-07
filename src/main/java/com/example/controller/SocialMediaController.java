@@ -1,7 +1,10 @@
 package com.example.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -86,6 +89,17 @@ public class SocialMediaController {
     public ResponseEntity<Message> createMessage(@RequestBody Message message){
         Message createdMessage = messageService.createMessage(message);
         return ResponseEntity.status(200).body(createdMessage);
+    }
+
+    /**
+     * Handles GET request to retrieve all messages.
+     * 
+     * @return A ResponseEntity containing a list of all messages and a HTTP Status code 200
+     */
+    @GetMapping("/messages")
+    public ResponseEntity<List<Message>> getAllMessages(){
+        List<Message> allMessages = messageService.getAllMessages();
+        return ResponseEntity.status(200).body(allMessages);
     }
 
 }
