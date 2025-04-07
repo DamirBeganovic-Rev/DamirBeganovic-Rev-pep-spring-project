@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -123,6 +124,29 @@ public class SocialMediaController {
     public ResponseEntity<Message> getMessageById(@PathVariable int messageId){
         Message message = messageService.getMessageById(messageId);
         return ResponseEntity.status(200).body(message);
+    }
+
+    /**
+     * Handles DELETE request to remove a message by its ID.
+     *
+     * This method attempts to delete a message with the specified message ID.
+     * If the message existed and was deleted, the response body will contain the number 1.
+     * If the message did not exist, the response body will be empty.
+     * In both cases, the HTTP Status is 200 (OK).
+     *
+     * @param messageId the unique ID of the message to be deleted
+     * @return a ResponseEntity with status 200 (OK). The response body contains 1 if a message was deleted,
+     *         or is empty if no message was found.
+     */
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageById(@PathVariable int messageId){
+        int numberOfRowsAffected = messageService.deleteMessageById(messageId);
+        // If no message was found to delete, return 200 (OK) with an empty response body
+        if (numberOfRowsAffected == 0){
+          return ResponseEntity.status(200).build();  
+        }
+        // Message was found and deleted successfully, return 200 (OK) with the response body
+        return ResponseEntity.status(200).body(numberOfRowsAffected);
     }
 
 }

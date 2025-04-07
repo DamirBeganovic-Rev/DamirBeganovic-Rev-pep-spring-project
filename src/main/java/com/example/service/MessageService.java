@@ -70,4 +70,23 @@ public class MessageService {
     public Message getMessageById(int id) {
         return messageRepository.findById(id).orElse(null);
     }
+
+    /**
+     * Deletes a message by its unique message ID
+     * 
+     * This method attempts to retrieve the message from the database and then delete it
+     * if it is found. It returns 1 to indicate that a row was deleted. If the message does
+     * not exist, it returns 0 to indicate that no rows were deleted. This allows the 
+     * controller to determine the appropriate response.
+     * 
+     * @param id the message Id of the Message to delete
+     * @return 1 if the message existed and was deleted; 0 if the message was not found
+     */
+    public int deleteMessageById(int id) {
+        if (messageRepository.findById(id).isPresent()){
+            messageRepository.deleteById(id);
+            return 1; // 1 row was deleted
+        }
+        return 0; // No rows were deleted, the message was not found
+    }
 }
