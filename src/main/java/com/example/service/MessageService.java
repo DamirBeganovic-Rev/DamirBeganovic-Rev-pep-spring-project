@@ -54,8 +54,20 @@ public class MessageService {
      * @return A list of all Message objects
      */
     public List<Message> getAllMessages() {
-        List<Message> allMessages = messageRepository.findAll();
+        return messageRepository.findAll();
+    }
 
-        return allMessages;
+    /**
+     * Retrieves a message by its unique message ID
+     * 
+     * This method attempts to retrieve the message from the database by the
+     * provided message ID.  If the message exists, it is returned.  If it doesn't
+     * exist, then null is returned.
+     * @param id the message ID of the Message to retrieve
+     * @return the Message object if it is found, or null if no message exists
+     *         in the database with the provided message ID
+     */
+    public Message getMessageById(int id) {
+        return messageRepository.findById(id).orElse(null);
     }
 }

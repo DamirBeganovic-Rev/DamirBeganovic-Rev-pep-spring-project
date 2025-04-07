@@ -21,9 +21,9 @@ public class ExceptionAndErrorController {
      * - 400 Bad Request if the username is blank or the password is too short.
      *
      * @param ex the thrown IllegalArgumentException during registration.
-     * @return a ResponseEntity with the appropriate status code and error message.
+     * @return a ResponseEntity with the appropriate status code and the exception message in the response body.
      */
-    @ExceptionHandler
+    @ExceptionHandler (IllegalArgumentException.class)
     public ResponseEntity<Object> handleRegistrationErrors(IllegalArgumentException ex) {
         String exMsg = ex.getMessage();
 
@@ -61,10 +61,24 @@ public class ExceptionAndErrorController {
      * Catches `InvalidLoginException` and returns a 401 Unauthorized response.
      *
      * @param ex the thrown InvalidLoginException.
-     * @return a ResponseEntity with HTTP 401 status and the error message.
+     * @return a ResponseEntity with HTTP 401 status and the exception message in the response body.
      */
-    @ExceptionHandler
+    @ExceptionHandler (InvalidLoginException.class)
     public ResponseEntity<Object> handleLoginErrors(InvalidLoginException ex){
         return ResponseEntity.status(401).body(ex.getMessage());
+    }
+
+    /**
+     * Handles cases where a requested resource (such as a message or account) is not found.
+     * 
+     * Catches ResourceNotFoundException instances thrown by the service layer
+     * and returns an HTTP 404 Not Found response with a descriptive error message.
+     * 
+     * @param ex the thrown ResourceNotFoundException.
+     * @return a ResponseEntity with HTTP 404 status and the exception message in the response body.
+     */
+    @ExceptionHandler (ResourceNotFoundException.class)
+    public ResponseEntity<Object> handleResourceNotFoundErrors(ResourceNotFoundException ex){
+        return ResponseEntity.status(404).body(ex.getMessage());
     }
 }

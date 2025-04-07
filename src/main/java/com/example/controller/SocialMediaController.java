@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.entity.Account;
 import com.example.entity.Message;
+import com.example.exception.InvalidLoginException;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
 
@@ -43,7 +45,7 @@ public class SocialMediaController {
      * 
      * @param account The Account object containing the user's username and password. The account object is expected
      *         to have a non-blank username and a password of at least 4 characters.
-     * @return A ResponseEntity containing the newly created Account object. The status is set to 200 (OK) if
+     * @return A ResponseEntity containing the newly created Account object. The HTTP Status is set to 200 (OK) if
      *         registration is successful, and the account details are returned in the body of the response.
      * @throws IllegalArgumentException If the username already exists, or if the username or password 
      *         do not meet the requirements.
@@ -62,7 +64,7 @@ public class SocialMediaController {
      * Otherwise, throws InvalidLoginException, which is handled globally.
      * 
      * @param account The Account object containing the username and password.
-     * @return a ResponseEntity containing the authenticated Account. The status is set to 200 (OK) if 
+     * @return a ResponseEntity containing the authenticated Account. The HTTP Status is set to 200 (OK) if 
      *         login is successful.
      * @throws InvalidLoginException if the credentials are invalid.
      */
@@ -82,7 +84,7 @@ public class SocialMediaController {
      * @param message The Message object containing the text to be posted. Must include a valid
      *        postedBy account ID and valid messageText.
      * @return a ResponseEntity containing the newly created Message object, including the generated messageId.
-     *         Status code is set to 200 (OK) if the message is created successfully.
+     *         HTTP Status code is set to 200 (OK) if the message is created successfully.
      * @throws IllegalArgumentException if the message contents are invalid.
      */
     @PostMapping("/messages")
@@ -94,12 +96,33 @@ public class SocialMediaController {
     /**
      * Handles GET request to retrieve all messages.
      * 
-     * @return A ResponseEntity containing a list of all messages and a HTTP Status code 200
+     * This method fetches all messages from the database. If there are no messages
+     * in the database, it will return an empty list. In both cases, the HTTP Status code is 200 (OK).
+     * 
+     * @return A ResponseEntity containing a list of all messages and a HTTP Status code 200 (OK)
      */
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getAllMessages(){
         List<Message> allMessages = messageService.getAllMessages();
         return ResponseEntity.status(200).body(allMessages);
+    }
+
+    /**
+     * Handles GET request to retrieve a message with the provided message ID.
+     * 
+     * This method fetches a message from the database using the provided message ID.
+     * If the message exists, it will be returned in the response body. If no message
+     * is found, the response body will be empty, but the HTTP status code will still be 200 (OK).
+     *  
+     * @param messageId the unique ID for the message to be retrieved
+     * @return A ResponseEntity containing the retrieved Message if it is found
+     *         or an empty reponse body if it is not found.  The HTTP Status code
+     *         is set to 200 (OK) in both cases.
+     */
+    @GetMapping("/messages/{messageId}")
+    public ResponseEntity<Message> getMessageById(@PathVariable int messageId){
+        Message message = messageService.getMessageById(messageId);
+        return ResponseEntity.status(200).body(message);
     }
 
 }
