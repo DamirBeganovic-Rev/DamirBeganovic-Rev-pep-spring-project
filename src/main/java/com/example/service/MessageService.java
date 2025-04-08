@@ -42,6 +42,7 @@ public class MessageService {
         // Validate message text. Must not be blank or exceed 255 characters
         if (newMessage.getMessageText() == null || 
             newMessage.getMessageText().isBlank() || 
+            newMessage.getMessageText().isEmpty() ||
             newMessage.getMessageText().length() > 255){
             throw new IllegalArgumentException("Message cannot be blank or over 255 characters.");
         }
@@ -121,5 +122,26 @@ public class MessageService {
         messageRepository.save(updatedMessage);
         // Return the number of rows affected (1 in this case since one message is updated)
         return 1;
+    }
+
+    /**
+     * Retrieves all messages posted by a specific user identified by the provided account ID.
+     *
+     * This method first checks if the account with the given accountId exists in the database
+     * If the account does not exist, an IllegalArgumentException is thrown with a relevant message.
+     * If the account exists, it retrieves all messages that have been posted by this account.
+     *
+     * @param accountId The unique identifier for the account whose messages are to be retrieved.
+     *        This ID must correspond to an existing account in the system.
+     * @return A list of Message objects representing all messages posted by the account with the specified ID.
+     *         If no messages are found for the account, an empty list is returned.
+     * @throws IllegalArgumentException If the account with the given accountId does not exist.
+     */
+    public List<Message> getAllMessagesFromUser(int accountId){
+        // Ensure the account associated with the provided accountId exists
+        if (!accountRepository.existsById(accountId)){
+            throw new IllegalArgumentException("The account does not exist.");
+        }
+        return messageRepository.findAllMessagesByAccountId(accountId);
     }
 }

@@ -156,10 +156,10 @@ public class SocialMediaController {
      * This method takes the `messageId` from the URL path and the updated message content 
      * from the request body as a `Message` object, and calls the service to perform the update. 
      * If the update is succesful, the response body will contain the number of rows affected (1)
-     * and the HTTP Status will be 200
+     * and the HTTP Status will be 200 (OK)
      * If the message does not exist or the new message text is invalid (blank or exceeds 255 characters),
      * an IllegalArgumentException will be thrown (handled by global exception handler) 
-     * and the the HTTP Status will be 400.
+     * and the the HTTP Status will be 400 (Client Error).
      * 
      * @param messageId the ID of the message to be updated.
      * @param updatedMessage the message object containing the new text to be updated
@@ -172,6 +172,24 @@ public class SocialMediaController {
         int numberOfRowsAffected = messageService.updateMessage(messageId, updatedMessage.getMessageText());
         // Return the number of rows affected in the response body with a 200 (OK) status code
         return ResponseEntity.status(200).body(numberOfRowsAffected);
+    }
+
+    /**
+     * Handles GET request to retrieve all messages posted by a specific user, identified by their account ID.
+     *
+     * This method retrieves a list of messages associated with the provided accountId. 
+     * If there are no messages for the specified account, an empty list will be returned.
+     * In both cases, the HTTP Status will be 200 (OK)
+     *
+     * @param accountId The unique identifier for the account whose messages are to be retrieved.
+     *        This ID corresponds to an existing account in the system.
+     * @return A ResponseEntity containing the HTTP status code (200 OK) and a list of Message objects.
+     *         The list will be empty if no messages exist for the given account.
+     */
+    @GetMapping("/accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getAllMesssagesFromUser(@PathVariable int accountId){
+        List<Message> allMessagesFromUser = messageService.getAllMessagesFromUser(accountId);
+        return ResponseEntity.status(200).body(allMessagesFromUser);
     }
 
 }
