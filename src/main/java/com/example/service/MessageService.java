@@ -1,6 +1,7 @@
 package com.example.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,5 +89,37 @@ public class MessageService {
             return 1; // 1 row was deleted
         }
         return 0; // No rows were deleted, the message was not found
+    }
+
+    /**
+     * Updates the text of an existing message in the database.
+     * 
+     * @param id The unique ID of the message to be updated
+     * @param messageText The new text string of the message
+     * @return The number of rows affected (should be 1 if the update is successful)
+     * @throws IllegalArgumentException if the message does not exist or if the message text
+     *         is blank or greater than 255 characters
+     */
+    public int updateMessage(int id, String messageText) throws IllegalArgumentException{
+        // Ensure the Message associated with id exists
+        Optional<Message> optionalMessage = messageRepository.findById(id);
+        if (optionalMessage.isEmpty()){
+            throw new IllegalArgumentException("The message does not exist.");
+        }
+        // Validate message text. Must not be blank or exceed 255 characters
+        if (messageText == null || 
+            messageText.isBlank() || 
+            messageText.isEmpty() ||
+            messageText.length() > 255){
+            throw new IllegalArgumentException("Message cannot be blank or over 255 characters.");
+        }
+        // Get the existing message from the database
+        Message updatedMessage = optionalMessage.get();
+        // Update the message text with the new value
+        updatedMessage.setMessageText(messageText);
+        // Save the updated message back to the database
+        messageRepository.save(updatedMessage);
+        // Return the number of rows affected (1 in this case since one message is updated)
+        return 1;
     }
 }

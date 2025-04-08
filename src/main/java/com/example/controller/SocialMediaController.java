@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -131,7 +132,7 @@ public class SocialMediaController {
      *
      * This method attempts to delete a message with the specified message ID.
      * If the message existed and was deleted, the response body will contain the number 1.
-     * If the message did not exist, the response body will be empty.
+     * If the message does not exist, the response body will be empty.
      * In both cases, the HTTP Status is 200 (OK).
      *
      * @param messageId the unique ID of the message to be deleted
@@ -146,6 +147,30 @@ public class SocialMediaController {
           return ResponseEntity.status(200).build();  
         }
         // Message was found and deleted successfully, return 200 (OK) with the response body
+        return ResponseEntity.status(200).body(numberOfRowsAffected);
+    }
+
+    /**
+     * Handles PATCH request to update the text of an existing message.
+     * 
+     * This method takes the `messageId` from the URL path and the updated message content 
+     * from the request body as a `Message` object, and calls the service to perform the update. 
+     * If the update is succesful, the response body will contain the number of rows affected (1)
+     * and the HTTP Status will be 200
+     * If the message does not exist or the new message text is invalid (blank or exceeds 255 characters),
+     * an IllegalArgumentException will be thrown (handled by global exception handler) 
+     * and the the HTTP Status will be 400.
+     * 
+     * @param messageId the ID of the message to be updated.
+     * @param updatedMessage the message object containing the new text to be updated
+     * @return a ResponseEntity containing the number of rows affected (1 if the update is successful)
+     * @throws IllegalArgumentException if the message does not exist or the message text is invalid (blank or exceeds 255 characters)
+     */
+    @PatchMapping("messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@PathVariable int messageId, @RequestBody Message updatedMessage){
+        // Call the service method to update the message using the provided messageId and the new message text
+        int numberOfRowsAffected = messageService.updateMessage(messageId, updatedMessage.getMessageText());
+        // Return the number of rows affected in the response body with a 200 (OK) status code
         return ResponseEntity.status(200).body(numberOfRowsAffected);
     }
 

@@ -44,6 +44,10 @@ public class ExceptionAndErrorController {
         else if (exMsg.contains("The account does not exist")){
             return ResponseEntity.status(400).body(exMsg);
         }
+        // Return status code 400 (Bad Request) if the message ID is not in the database
+        else if (exMsg.contains("The message does not exist")){
+            return ResponseEntity.status(400).body(exMsg);
+        }
         // Return status code 400 (Bad Request) if the message's text is blank or too long
         else if (exMsg.contains("Message cannot be blank or over 255 characters")){
             return ResponseEntity.status(400).body(exMsg);
